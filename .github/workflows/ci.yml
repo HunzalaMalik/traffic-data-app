@@ -1,4 +1,4 @@
-name: Run Tests
+name: CI
 
 on:
   push:
@@ -15,8 +15,6 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
           POSTGRES_DB: traffic_data_test
         ports:
           - 5432:5432
@@ -53,5 +51,6 @@ jobs:
       - name: Run Backend Tests
         run: |
           cd backend
-          RAILS_ENV=test bundle exec rails db:create db:migrate
+          RAILS_ENV=test PGHOST=localhost bundle exec rails db:create db:migrate
           RAILS_ENV=test bundle exec rspec
+        
