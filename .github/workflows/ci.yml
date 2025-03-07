@@ -11,13 +11,21 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+      DB_HOST: localhost
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     services:
       postgres:
         image: postgres:15
-        env:
-          POSTGRES_DB: traffic_data_test
         ports:
           - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: traffic_data_test
+
 
     steps:
       - name: Checkout Repository
@@ -48,9 +56,14 @@ jobs:
           cd backend
           bundle install
 
-      - name: Run Backend Tests
+      - name: Setup Database
         run: |
           cd backend
-          RAILS_ENV=test PGHOST=localhost bundle exec rails db:create db:migrate
-          RAILS_ENV=test bundle exec rspec
+          cp config/database.yml.github-actions config/database.yml
+          bundle exec rake db:create db:schema:load
+  
+      - name: Run RSpec tests
+        run: |
+          cd backend
+          bundle exec rspec
         
