@@ -1,0 +1,24 @@
+# Ignore system files
+.DS_Store
+node_modules/
+log/
+tmp/
+coverage/
+
+# Ignore environment files
+.env
+.env.production
+.env.development
+
+# Ignore dependencies and build artifacts
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.next/
+backend/log/
+backend/tmp/
+backend/db/*.sqlite3
+backend/db/*.sqlite3-journal
+
+# Ignore Docker files
+docker-compose.override.yml
