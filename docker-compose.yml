@@ -1,33 +1,60 @@
 version: '3.8'
 
 services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    depends_on:
-      - db
-    environment:
-      DATABASE_URL: "postgres://postgres:password@db:5432/traffic_data"
-    ports:
-      - "3001:3001"
-  
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:80"
-
   db:
     image: postgres:15
+    container_name: rails_postgres
     restart: always
     environment:
-      POSTGRES_DB: traffic_data
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: backend
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rails_backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgres://postgres:password@db:5432/backend"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: backend
+      POSTGRES_HOST: db
+      RAILS_ENV: production
+      SECRET_KEY_BASE: "5ab2da20574f1aea5625e08d78258f85fa1bf01f7e00f15e30faf1b733db80b6a1efe99a3a0a9fe587de312604be5a21c5bab92f862d8d38dad545238075799f"
+    ports:
+      - "3001:3001"
+    volumes:
+      - "./backend:/app"
+    command: >
+      sh -c "bundle exec rails db:migrate db:seed && bundle exec rails server -b 0.0.0.0 -p 3001"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react_frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    volumes:
+      - "./frontend:/app"
 
 volumes:
   pgdata:

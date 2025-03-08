@@ -14,18 +14,14 @@ jobs:
     env:
       RAILS_ENV: test
       DB_HOST: localhost
-      POSTGRES_USER: postgres
+      POSTGRES_USER: postgres 
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: traffic_data_test
     services:
       postgres:
         image: postgres:15
         ports:
           - 5432:5432
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: traffic_data_test
-
 
     steps:
       - name: Checkout Repository
@@ -34,7 +30,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 23
 
       - name: Install Frontend Dependencies
         run: |
@@ -61,7 +57,7 @@ jobs:
           cd backend
           cp config/database.yml.github-actions config/database.yml
           bundle exec rake db:create db:schema:load
-  
+
       - name: Run RSpec tests
         run: |
           cd backend

@@ -2,7 +2,7 @@ import api from "./api";
 
 export const getCountryTraffic = async () => {
   const response = await api.get("/country_traffics");
-  return response.data; // ✅ Only return the relevant data
+  return response.data;
 };
 
 export const createCountryTraffic = async (data) => {

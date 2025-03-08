@@ -1,5 +1,5 @@
 # Use Node.js as the base image
-FROM node:23.6.0
+FROM node:23.6.0 AS build
 
 # Set the working directory
 WORKDIR /app
@@ -16,7 +16,7 @@ RUN npm run build
 
 # Use Nginx to serve the frontend
 FROM nginx:alpine
-COPY --from=0 /app/build /usr/share/nginx/html
+COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80
 
 # Start Nginx
