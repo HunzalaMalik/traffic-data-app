@@ -24,29 +24,31 @@ const VehicleModal = ({ isOpen, onClose, selectedCountry }) => {
       isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel="Manage Vehicles"
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4"
     >
-      <div className="bg-white p-6 rounded-lg shadow-lg w-1/2 relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg relative max-h-[80vh] overflow-auto">
         <button
           onClick={onClose}
           className="absolute top-2 right-2 bg-red-600 text-white px-3 py-1 rounded"
         >
           X
         </button>
-
-        <h2 className="text-xl font-bold mb-4">Manage Vehicles for {selectedCountry?.country}</h2>
-
+  
+        <h2 className="text-xl font-bold mb-4 text-center">
+          Manage Vehicles for {selectedCountry?.country}
+        </h2>
+  
         <VehicleForm
           editingVehicle={editingVehicle}
           selectedCountry={selectedCountry}
-          vehicles = {vehicles}
+          vehicles={vehicles}
           clearEditing={() => setEditingVehicle(null)}
         />
-
+  
         <VehicleList vehicles={vehicles} onEdit={setEditingVehicle} />
       </div>
     </Modal>
-  );
+  );  
 };
 
 export default VehicleModal;
