@@ -35,7 +35,7 @@ services:
       POSTGRES_DB: backend
       POSTGRES_HOST: db
       RAILS_ENV: production
-      SECRET_KEY_BASE: "5ab2da20574f1aea5625e08d78258f85fa1bf01f7e00f15e30faf1b733db80b6a1efe99a3a0a9fe587de312604be5a21c5bab92f862d8d38dad545238075799f"
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
     ports:
       - "3001:3001"
     volumes:

@@ -9,15 +9,16 @@ chmod +x setup.sh
 BACKEND_DIR="backend"
 FRONTEND_DIR="frontend"
 
-# Environment variables
-POSTGRES_USER="postgres"
-POSTGRES_PASSWORD="password"
-POSTGRES_DB="traffic_data_app"
-DOCKER_NETWORK="traffic_network"
-
 # Define the endpoint URL
 BACKEND_URL="http://localhost:3001"
 FRONTEND_URL="http://localhost:3000"
+
+echo "🛑 Setting Up Secret Key"
+SECRET_KEY_BASE=$(docker run --rm ruby:3.4.1 ruby -e "require 'securerandom'; puts SecureRandom.hex(64)")
+
+cat <<EOF > .env
+SECRET_KEY_BASE="$SECRET_KEY_BASE"
+EOF
 
 echo "🛑 Stopping any existing running containers..."
 docker-compose down || true
@@ -39,7 +40,6 @@ if ! command -v docker-compose &> /dev/null; then
   echo "✅ Docker Compose installed successfully."
 fi
 
-
 echo "🐳 Setting up Docker network..."
 docker network create $DOCKER_NETWORK || true
 
@@ -48,7 +48,7 @@ echo "🔧 Setting up the Rails backend..."
 cd $BACKEND_DIR
 
 # Copy the example environment file
-cp .env.example .env || true
+cp .env .env || true
 
 # Ensure dependencies are installed
 bundle install
