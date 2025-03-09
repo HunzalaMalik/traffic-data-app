@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: backend
+      POSTGRES_DB: backend_production
     ports:
       - "5432:5432"
     volumes:
@@ -32,10 +32,10 @@ services:
       DATABASE_URL: "postgres://postgres:password@db:5432/backend"
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: backend
+      POSTGRES_DB: backend_production
       POSTGRES_HOST: db
       RAILS_ENV: production
-      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      SECRET_KEY_BASE: $(docker run --rm ruby:3.4.1 ruby -e "require 'securerandom'; puts SecureRandom.hex(64)")
     ports:
       - "3001:3001"
     volumes:

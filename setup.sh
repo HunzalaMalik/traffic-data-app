@@ -1,27 +1,12 @@
-#!/bin/bash
-
 echo "🚀 Starting setup script..."
 
-# Make the script executable
 chmod +x setup.sh
 
-# Set the backend and frontend directories
-BACKEND_DIR="backend"
-FRONTEND_DIR="frontend"
-
-# Define the endpoint URL
 BACKEND_URL="http://localhost:3001"
 FRONTEND_URL="http://localhost:3000"
 
-echo "🛑 Setting Up Secret Key"
-SECRET_KEY_BASE=$(docker run --rm ruby:3.4.1 ruby -e "require 'securerandom'; puts SecureRandom.hex(64)")
-
-cat <<EOF > .env
-SECRET_KEY_BASE="$SECRET_KEY_BASE"
-EOF
-
 echo "🛑 Stopping any existing running containers..."
-docker-compose down || true
+docker-compose down -v || true
 
 if ! command -v docker &> /dev/null; then
   echo "❌ Docker is not installed. Please install Docker and try again."
@@ -43,42 +28,9 @@ fi
 echo "🐳 Setting up Docker network..."
 docker network create $DOCKER_NETWORK || true
 
-# Setup Backend
-echo "🔧 Setting up the Rails backend..."
-cd $BACKEND_DIR
+echo "🐳 Building and starting services..."
+docker-compose up --build -d
 
-# Copy the example environment file
-cp .env .env || true
-
-# Ensure dependencies are installed
-bundle install
-
-# Set up the database
-echo "📦 Setting up the database..."
-docker-compose up -d postgres
-sleep 5 # Wait for PostgreSQL to start
-rails db:create db:migrate db:seed
-
-# Start the backend server
-echo "🚀 Starting the backend server..."
-docker-compose up -d backend
-
-cd ..
-
-# Setup Frontend
-echo "🌐 Setting up the React frontend..."
-cd $FRONTEND_DIR
-
-# Ensure dependencies are installed
-npm install
-
-# Start the frontend server
-echo "🚀 Starting the frontend server..."
-docker-compose up -d frontend
-
-cd ..
-
-# Show the running services
 echo "✅ Services are now running!"
 
 echo "🔗 Access the application:"
